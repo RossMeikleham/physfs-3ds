@@ -148,7 +148,7 @@ void __PHYSFS_platformDetectAvailableCDs(PHYSFS_StringCallback cb, void *data)
 } /* __PHYSFS_platformDetectAvailableCDs */
 
 
-#ifndef PHYSFS_PLATFORM_SWITCH
+#ifndef PHYSFS_PLATFORM_3DS
 /*
  * See where program (bin) resides in the $PATH specified by (envr).
  *  returns a copy of the first element in envr that contains it, or NULL
@@ -217,7 +217,7 @@ static char *findBinaryInPath(const char *bin, char *envr)
 
 
 /* ignore symlinks, are not supported anyway */
-#ifndef PHYSFS_PLATFORM_SWITCH
+#ifndef PHYSFS_PLATFORM_3DS
 static char *readSymLink(const char *path)
 {
     ssize_t len = 64;
@@ -256,7 +256,7 @@ char *__PHYSFS_platformCalcBaseDir(const char *argv0)
 
     /* Try to avoid using argv0 unless forced to. Try system-specific stuff. */
 
-#ifdef PHYSFS_PLATFORM_SWITCH
+#ifdef PHYSFS_PLATFORM_3DS
     /* As there is no system-specific directory, directly inspect argv0. */
     if (argv0 == NULL)
     {
@@ -372,7 +372,7 @@ char *__PHYSFS_platformCalcPrefDir(const char *org, const char *app)
 {
     char *retval = NULL;
     size_t len = 0;
-#ifdef PHYSFS_PLATFORM_SWITCH
+#ifdef PHYSFS_PLATFORM_3DS
     /* Use the jail directory (hopefully) found before. This way we do not
      *  need to add an application folder, because it is exclusive.
      */

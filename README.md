@@ -2,16 +2,17 @@
 
 A portable, flexible file i/o abstraction.
 
-Version 3.0.1 for Nintendo Switch Homebrew (using libnx)
+Version 3.0.1 for Nintendo 3DS Homebrew (using libctru + sdl). 
+Fork of physfs-switch for the Nintendo Switch : https://github.com/carstene1ns/physfs-switch
 
-## Building for Switch
+## Building for 3DS
 
 ```bash
 rm -rf build
 mkdir build
 cd build
 cmake .. -DCMAKE_TOOLCHAIN_FILE=../Toolchain.cmake -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=$DEVKITPRO/portlibs/switch \
+    -DCMAKE_INSTALL_PREFIX=$DEVKITPRO/portlibs/3ds \
     -DPHYSFS_BUILD_SHARED=OFF -DPHYSFS_BUILD_TEST=OFF
 make
 sudo make install

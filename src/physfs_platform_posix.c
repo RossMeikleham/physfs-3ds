@@ -23,8 +23,9 @@
 #include <fcntl.h>
 #include <pthread.h>
 
-#ifdef PHYSFS_PLATFORM_SWITCH
-#include <switch.h>
+#ifdef PHYSFS_PLATFORM_3DS
+#include <3ds.h>
+#include <SDL/SDL.h>
 #endif
 
 #include "physfs_internal.h"
@@ -63,7 +64,7 @@ static inline PHYSFS_ErrorCode errcodeFromErrno(void)
 
 
 /* unsupported */
-#ifndef PHYSFS_PLATFORM_SWITCH
+#ifndef PHYSFS_PLATFORM_3DS
 static char *getUserDirByUID(void)
 {
     uid_t uid = getuid();
@@ -95,7 +96,7 @@ static char *getUserDirByUID(void)
 char *__PHYSFS_platformCalcUserDir(void)
 {
     char *retval = NULL;
-#ifdef PHYSFS_PLATFORM_SWITCH
+#ifdef PHYSFS_PLATFORM_3DS
     /* Use the jail directory (hopefully) found before. */
     retval = __PHYSFS_strdup(PHYSFS_getBaseDir());
 #else
@@ -179,7 +180,7 @@ static void *doOpen(const char *filename, int mode)
     /* O_APPEND doesn't actually behave as we'd like. */
     mode &= ~O_APPEND;
 
-#ifdef __SWITCH__
+#ifdef __3DS__
     fd = open(filename, mode);
 #else
     fd = open(filename, mode, S_IRUSR | S_IWUSR);
@@ -315,7 +316,7 @@ int __PHYSFS_platformDelete(const char *path)
 int __PHYSFS_platformStat(const char *fname, PHYSFS_Stat *st, const int follow)
 {
     struct stat statbuf;
-#ifdef PHYSFS_PLATFORM_SWITCH
+#ifdef PHYSFS_PLATFORM_3DS
     /* ignoring symlinks, they are unsupported anyway! */
     (void) follow;
     const int rc = stat(fname, &statbuf);
@@ -352,7 +353,7 @@ int __PHYSFS_platformStat(const char *fname, PHYSFS_Stat *st, const int follow)
     st->createtime = statbuf.st_ctime;
     st->accesstime = statbuf.st_atime;
 
-#ifdef PHYSFS_PLATFORM_SWITCH
+#ifdef PHYSFS_PLATFORM_3DS
     /* shortcut */
     st->readonly = !(statbuf.st_mode & S_IWRITE);
 #else
@@ -372,8 +373,8 @@ typedef struct
 
 void *__PHYSFS_platformGetThreadID(void)
 {
-#ifdef PHYSFS_PLATFORM_SWITCH
-    u64 tid = 0;
+#ifdef PHYSFS_PLATFORM_3DS
+    u32 tid = 0;
     svcGetThreadId(&tid, CUR_THREAD_HANDLE);
     return ( (void *) tid );
 #else
@@ -384,10 +385,11 @@ void *__PHYSFS_platformGetThreadID(void)
 
 void *__PHYSFS_platformCreateMutex(void)
 {
-#ifdef PHYSFS_PLATFORM_SWITCH
-    RMutex *m = (RMutex *) allocator.Malloc(sizeof(RMutex));
-    BAIL_IF(!m, PHYSFS_ERR_OUT_OF_MEMORY, NULL);
-    rmutexInit(m);
+#ifdef PHYSFS_PLATFORM_3DS
+    SDL_mutex *m; 
+    m = SDL_CreateMutex();
+//    Handle *m = (Handle *) allocator.Malloc(sizeof(Handle));
+//    svcCreateMutex(m, false);
 #else
     int rc;
     PthreadMutex *m = (PthreadMutex *) allocator.Malloc(sizeof (PthreadMutex));
@@ -409,7 +411,7 @@ void *__PHYSFS_platformCreateMutex(void)
 void __PHYSFS_platformDestroyMutex(void *mutex)
 {
 /* We do not care (yet?) */
-#ifndef PHYSFS_PLATFORM_SWITCH
+#ifndef PHYSFS_PLATFORM_3DS
     PthreadMutex *m = (PthreadMutex *) mutex;
 
     /* Destroying a locked mutex is a bug, but we'll try to be helpful. */
@@ -424,9 +426,9 @@ void __PHYSFS_platformDestroyMutex(void *mutex)
 
 int __PHYSFS_platformGrabMutex(void *mutex)
 {
-#ifdef PHYSFS_PLATFORM_SWITCH
-    RMutex *m = (RMutex *) mutex;
-    rmutexLock(m);
+#ifdef PHYSFS_PLATFORM_3DS
+    SDL_mutex *m = (SDL_mutex *) mutex;
+    SDL_LockMutex(m);    
 #else
     PthreadMutex *m = (PthreadMutex *) mutex;
     pthread_t tid = pthread_self();
@@ -445,9 +447,9 @@ int __PHYSFS_platformGrabMutex(void *mutex)
 
 void __PHYSFS_platformReleaseMutex(void *mutex)
 {
-#ifdef PHYSFS_PLATFORM_SWITCH
-    RMutex *m = (RMutex *) mutex;
-    rmutexUnlock(m);
+#ifdef PHYSFS_PLATFORM_3DS
+    SDL_mutex *m = (SDL_mutex *) mutex;
+    SDL_UnlockMutex(m);    
 #else
     PthreadMutex *m = (PthreadMutex *) mutex;
     assert(m->owner == pthread_self());  /* catch programming errors. */
