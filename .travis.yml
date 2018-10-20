@@ -1,0 +1,12 @@
+
+matrix:
+  include:
+    - os: linux
+      language: ruby
+      services:
+  
+install:
+    - docker build -t physfs_3ds . 
+
+script: 
+    - docker run physfs_3ds

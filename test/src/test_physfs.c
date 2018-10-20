@@ -8,6 +8,8 @@
 
 #define _CRT_SECURE_NO_WARNINGS 1
 
+#include <3ds.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -1519,6 +1521,10 @@ int main(int argc, char **argv)
 {
     char *buf = NULL;
     int rc = 0;
+    
+    mcuHwcInit();
+    gfxInitDefault();
+	consoleInit(GFX_BOTTOM, NULL);   
 
 #if (defined __MWERKS__)
     extern tSIOUXSettings SIOUXSettings;
@@ -1594,7 +1600,13 @@ int main(int argc, char **argv)
 /*
     printf("\n\ntest_physfs written by ryan c. gordon.\n");
     printf(" it makes you shoot teh railgun bettar.\n");
-*/
+*/ 
+    printf("Finished\n");
+    while (aptMainLoop()) {
+    }
+    
+    gfxExit();
+    mcuHwcExit();
 
     return 0;
 } /* main */
