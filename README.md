@@ -1,5 +1,7 @@
 # PhysicsFS - https://icculus.org/physfs/
 
+[![Build Status](https://travis-ci.org/RossMeikleham/physfs-3ds.svg?branch=master)](https://travis-ci.org/RossMeikleham/physfs-3ds)
+
 A portable, flexible file i/o abstraction.
 
 Version 3.0.1 for Nintendo 3DS Homebrew (using libctru + sdl). 
